@@ -1,0 +1,12 @@
+
+Shutdown Procedure:
+
+Save all unsaved work.
+Close all open programs and applications.
+Log out of all user accounts.
+Power down the computer using the shutdown button.
+Unplug the computer from the power outlet.
+
+Note: If you are shutting down a server or other critical system, please follow the manufacturer's specific shutdown procedures to ensure data integrity and system stability.
+Thank you for using my services. Goodbye!
+[System Shutting Down]

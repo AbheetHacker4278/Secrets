@@ -1,0 +1,33 @@
+
+
+Check whether a variable is defined:
+
+python
+if variable_name is not None:
+    # Do something
+
+Check whether a list is empty:
+
+python
+if not list_name:
+    # Do something
+
+Check whether a string is empty:
+
+python
+if not string_name:
+    # Do something
+
+Check whether a dictionary is empty:
+
+python
+if not dictionary_name:
+    # Do something
+
+Check whether a file exists:
+
+```python
+import os
+if os.path.isfile("file_name.txt"):
+    # Do something
+```

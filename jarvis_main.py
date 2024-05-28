@@ -36,6 +36,8 @@ if __name__ == "__main__":
     import platform
     import time
     import pyautogui
+    import requests
+
     load_dotenv()
     porcupine=None
     paud=None
@@ -99,6 +101,9 @@ if __name__ == "__main__":
                 speak("No threats found.")
         else:
             speak("Failed to retrieve threat report.")
+
+
+
 
 
 
@@ -181,6 +186,28 @@ if __name__ == "__main__":
 
         elif text == "run security check":
              security_check()
+        
+        elif text == "analyse packet status":
+            import firewall
+
+        elif text == "check weather":
+            speak("Okay Boss")
+            import weather
+            api_key = "da7fcfac8bffd01e83fcd97fd91d4c9e"  # Replace with your OpenWeatherMap API key
+            while True:
+                location = weather.get_location_from_voice()
+                if location:
+                    weather.get_weather(api_key, location)
+                    choice = weather.get_location_from_voice2().lower()
+                    if choice == "terminate":
+                        speak("Terminating the weather check process. Goodbye!")
+                        break
+                    elif choice == "yes":
+                        location = weather.get_location_from_voice()
+                else:
+                    speak("Boss , May be you said wrong city name")
+                    weather.play_beep()  # Play beep if location input fails
+
 
         elif text=='stop music':
                 speak('ok boss')

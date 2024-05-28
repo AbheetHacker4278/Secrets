@@ -1,0 +1,11 @@
+
+go  
+  ctx := context.Background()
+  task := &datastore.Task{
+      Key: datastore.NameKey("Task", "sampleTask", nil),
+      Priority: 4,
+      Status:   datastore.StatusActive,
+  }
+  if _, err := client.Put(ctx, task.Key, task); err != nil {
+      return err
+  }

@@ -1,0 +1,33 @@
+
+```go
+  ctx := context.Background()
+  client, err := automl.NewClient(ctx)
+  if err != nil {
+      return err
+  }
+  defer client.Close()
+req := &automlpb.BatchPredictRequest{
+      Name: modelID,
+      InputConfig: &automlpb.BatchPredictInputConfig{
+          Source: &automlpb.BatchPredictInputConfig_BigquerySource{
+              BigquerySource: &automlpb.BigQuerySource{
+                  InputUri: "bq://project_id.dataset_id.table_id",
+              },
+          },
+          Params: map[string]string{
+              "score_threshold": "0.9",
+          },
+      },
+  }
+op, err := client.BatchPredict(ctx, req)
+  if err != nil {
+      return err
+  }
+  fmt.Printf("Processing operation name: %q\n", op.Name())
+resp, err := op.Wait(ctx)
+  if err != nil {
+      return err
+  }
+fmt.Printf("Batch Prediction results saved to Cloud Storage bucket.\n")
+  fmt.Println(resp)
+```

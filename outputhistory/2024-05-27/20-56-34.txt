@@ -1,0 +1,21 @@
+
+```go
+  ctx := context.Background()
+client, err := automl.NewClient(ctx)
+  if err != nil {
+      return err
+  }
+  defer client.Close()
+req := &automlpb.ActivateModelRequest{
+      Name: modelID,
+  }
+op, err := client.ActivateModel(ctx, req)
+  if err != nil {
+      return err
+  }
+  fmt.Printf("Processing operation name: %q\n", op.Name())
+if err := op.Wait(ctx); err != nil {
+      return err
+  }
+fmt.Printf("Model activated.\n")
+```

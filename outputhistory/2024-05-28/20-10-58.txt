@@ -1,0 +1,48 @@
+
+Checking Whether
+1. Boolean Conditions:
+
+if (condition) {...}: Execute code if the condition is true.
+if-else statements: Execute different code blocks based on whether the condition is true or false.
+
+2. Conditional Operators:
+
+? : operator: Similar to if-else statements, but as a concise expression.
+&& (logical AND): Checks if multiple conditions are all true.
+|| (logical OR): Checks if at least one condition is true.
+
+3. Value Equality Checks:
+
+== (loose equality): Compares values, possibly converting types.
+=== (strict equality): Compares values and types exactly.
+!= and !== (inequality operators): Inverse of equality checks.
+
+4. Type Checks:
+
+typeof operator: Returns the type of a variable.
+instanceof operator: Checks if an object is an instance of a specific class.
+
+5. Null and Undefined Checks:
+
+== null and === null: Check if a value is null.
+== undefined and === undefined: Check if a value is undefined.
+
+6. Existence Checks:
+
+in operator: Checks if a property exists in an object.
+hasOwnProperty method: Checks if an object has its own property with a specific name.
+
+7. Regex Expression Matching:
+
+match() method: Checks if a string matches a regular expression.
+test() method: Similar to match(), but returns a Boolean indication of whether there is a match.
+
+8. Array and Object Methods:
+
+includes() method: Checks if an array or object contains a specific element or value.
+some() and every() methods: Check if any or all elements in an array satisfy a condition.
+
+9. Custom Validation Functions:
+
+Create custom functions to perform specific validation checks, such as checking for valid email addresses or phone numbers.
+
