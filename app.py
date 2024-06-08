@@ -105,11 +105,9 @@ if __name__ == "__main__":
         else:
             speak("Failed to retrieve threat report.")
 
-
-    import tam
     def main():
         # Open a new terminal window for user input
-        subprocess.Popen(['start', 'cmd', '/k', 'python', 'tam.py'], shell=True)
+        subprocess.Popen(['start', 'cmd', '/k', 'python', 'timee.py'], shell=True)
 
 
     def open_notepad(text=None):
@@ -189,7 +187,7 @@ if __name__ == "__main__":
         elif text == "run firewall in graphical mode":
             import firewall
 
-        elif text == "timer start karo":
+        elif text == "timer chalu karo":
             main()
             
 
