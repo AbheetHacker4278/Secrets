@@ -34,11 +34,14 @@ if __name__ == "__main__":
     from AppOpener import open as Open,close as Close
     import webbrowser
     from datetime import date,datetime
+    import datetime
     import subprocess
     import platform
     import time
     import pyautogui
     import requests
+    import signal
+    import sys
 
     load_dotenv()
     porcupine=None
@@ -78,13 +81,6 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join('outputhistory/')):
         os.mkdir(os.path.join('outputhistory/'))
 
-    # def run_django_app():
-    #     speak("Starting Django Server.")
-    #     os.chdir('C:/Users/Abheet seth/Desktop/deep/Deepfake_detection_using_deep_learning/Django Application')
-    #     subprocess.Popen(['start', 'cmd', '/k', 'python', 'manage.py', 'runserver'], shell=True)
-    #     webbrowser.open("http://127.0.0.1:8000/")
-
-
     def security_check():
         speak("Security Check is starting , it may take a few seconds")
         loding.main()
@@ -122,65 +118,90 @@ if __name__ == "__main__":
             # Type the text
             pyautogui.typewrite(text)
         
+    
+    def wishme():
+        hour = int(datetime.datetime.now().hour)
+        if 0 <= hour < 12:
+            speak("Good Morning Boss, how may I help you today?")
+        elif 12 <= hour < 18:
+            speak("Good Afternoon Boss, how may I help you today?")
+        else:
+            speak("Good Evening Boss, how may I help you today?")
+
+    wishme()
+
+    def terminate_processes(signal_number, frame):
+        print("Terminating processes...")
+        if cp is not None:
+            cp.terminate()
+        sys.exit(0)
+
+    # Register the signal handler
+    signal.signal(signal.SIGINT, terminate_processes)
+    signal.signal(signal.SIGTERM, terminate_processes)
+
     def jarvis_brain(text):
         print(chat.history)
         q = text.split(" ")
         if q[0] == "open":
-            if text=='open youtube':
-                        webbrowser.open("https://www.youtube.com/")
-                        speak("opening youtube")
+            if text == 'open youtube':
+                speak("Boss, can you please tell me about the topic that you want to play?")
+                recognize = sr.Recognizer()
+                with sr.Microphone() as source:
+                    audio = recognize.listen(source)
+                try:
+                    topic = recognize.recognize_google(audio, language='en-in')
+                    print("Topic:", topic)
+                    webbrowser.open(f"https://www.youtube.com/results?search_query={topic}")
+                    speak(f"Opening YouTube and searching for {topic}")
+                except Exception as e:
+                    print(e)
+                    speak("Sorry, I couldn't understand the topic.")
             else:
-                Open(" ".join(q[1::]),match_closest=True)
-                speak(f'opening {" ".join(q[1::])}')
+                Open(" ".join(q[1:]), match_closest=True)
+                speak(f'opening {" ".join(q[1:])}')
         
         elif q[0] == "close":
-            Close(" ".join(q[1::]),match_closest=True)
-            speak(f'closing {" ".join(q[1::])}')
-
-
-
+            Close(" ".join(q[1:]), match_closest=True)
+            speak(f'closing {" ".join(q[1:])}')
+        
         elif text == "open notepad":
             open_notepad()
         elif text == "write something on notepad":
             text_to_write = speak()
             if text_to_write:
                 open_notepad(text_to_write)
-
-
-
-
-
-        elif text=='play music':
-                file=open("chose.txt",'r')
-                chose=file.readlines()
-                chose=int(chose[0])
-                m='e:\\songs'
-                song=os.listdir(m)
-                length=len(song)
-                speak("now music is playing")
-                os.startfile(os.path.join(m,song[chose]))
-                chose+=1
-                file = open("chose.txt",'w')
-                file.write(str(chose))
-                file.close()
-        elif text=='next':
-                file=open("chose.txt",'r')
-                chose=file.readlines()
-                chose=int(chose[0])
-                m='e:\\songs'
-                song=os.listdir(m)
-                length=len(song)
-                if chose>=length:
-                    speak("no more music to next")
-                    speak("i'm playing music from starting")
-                    chose=0
-                    os.startfile(os.path.join(m,song[chose]))
-                else:
-                    os.startfile(os.path.join(m,song[chose]))
-                    chose+=1
-                file = open("chose.txt",'w')
-                file.write(str(chose))
-                file.close()
+        elif text == 'play music':
+            file = open("chose.txt", 'r')
+            chose = file.readlines()
+            chose = int(chose[0])
+            m = 'e:\\songs'
+            song = os.listdir(m)
+            length = len(song)
+            speak("now music is playing")
+            os.startfile(os.path.join(m, song[chose]))
+            chose += 1
+            file = open("chose.txt", 'w')
+            file.write(str(chose))
+            file.close()
+        elif text == 'next':
+            file = open("chose.txt", 'r')
+            chose = file.readlines()
+            chose = int(chose[0])
+            m = 'e:\\songs'
+            song = os.listdir(m)
+            length = len(song)
+            if chose >= length:
+                speak("no more music to next")
+                speak("i'm playing music from starting")
+                chose = 0
+                os.startfile(os.path.join(m, song[chose]))
+            else:
+                os.startfile(os.path.join(m, song[chose]))
+                chose += 1
+            file = open("chose.txt", 'w')
+            file.write(str(chose))
+            file.close()
         elif text == "run security check":
             security_check()
         
@@ -189,8 +210,18 @@ if __name__ == "__main__":
 
         elif text == "timer chalu karo":
             main()
-            
 
+        elif text == "shutdown":
+            cp = None
+            try:
+                speak("Shutting down. Goodbye, Boss!")
+                multiprocessing.freeze_support()
+                # Your main logic here
+            except KeyboardInterrupt:
+                terminate_processes(None, None)
+            finally:
+                terminate_processes(None, None)
+            
         elif text == "check climate condition":
             speak("Boss")
             import weather
@@ -206,31 +237,27 @@ if __name__ == "__main__":
                     elif choice == "yes":
                         location = weather.get_location_from_voice()
                 else:
-                    speak("Boss , May be you said wrong city name")
+                    speak("Boss, Maybe you said the wrong city name")
                     weather.play_beep()  # Play beep if location input fails
 
-
-        elif text=='stop music':
-                speak('ok boss')
-                # Close("Media Player",match_closest=True)
-                speak("now i stop music")
-                # os.system('taskkill /F /FI "WINDOWTITLE eq Movies & Tv" ')
-                os.system('taskkill /F /FI "WINDOWTITLE eq Media Player" ')
-                
+        elif text == 'stop music':
+            speak('ok boss')
+            speak("now I stop music")
+            os.system('taskkill /F /FI "WINDOWTITLE eq Media Player" ')
+            
         else:
             response = chat.send_message(text)
             responsetext = to_text(response.text)
             speak(responsetext)
-            # print("speaking...")
             todaydate = date.today()
             if not os.path.exists(f'outputhistory/{todaydate}'):
                 os.mkdir(f'outputhistory/{todaydate}')
             now = datetime.now()
             current_time = now.strftime("%H-%M-%S")
-            # print(f'{todaydate}/{current_time}.txt')
-            f = open(os.path.join(f'outputhistory/{todaydate}/',f'{current_time}.txt'),'w')
+            f = open(os.path.join(f'outputhistory/{todaydate}/', f'{current_time}.txt'), 'w')
             f.writelines(responsetext)
             f.close()
+
 
     try:
        
@@ -256,14 +283,11 @@ if __name__ == "__main__":
                     print(query)
                     query = str(query).lower()
                     if query != " " and query != "":
-                        # cp = multiprocessing.Process(target=jarvis_brain,args=(query,))
-                        # cp.start()
                         jarvis_brain(query)
                         
                 except Exception as e:
                     print(e)
                     pass
-                    # speak("not recognize")
 
     finally:
         if porcupine is not None:

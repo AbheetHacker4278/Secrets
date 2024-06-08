@@ -1,0 +1,101 @@
+
+```go
+import (
+  "context"
+  "fmt"
+  "io"
+"cloud.google.com/go/dataflow"
+  "cloud.google.com/go/dataflow/dataflowpb"
+  "google.golang.org/protobuf/proto"
+)
+// run executes a Cloud Dataflow job and prints job information to w.
+func run(w io.Writer, projectID string, jobName string) (*dataflowpb.Job, error) {
+  // projectID := "my-project-id"
+  // jobName := "my-job"
+  ctx := context.Background()
+client, err := dataflow.NewClient(ctx, projectID)
+  if err != nil {
+      return nil, fmt.Errorf("dataflow.NewClient: %v", err)
+  }
+job := &dataflowpb.Job{
+      ProjectId: projectID,
+      Name:     jobName,
+      Type: &dataflowpb.Job_Standard{
+          Standard: &dataflowpb.StandardJob{
+              Location:                 "us-east1",
+              TransformNameToId:        map[string]int32{"ComputeWordCounts": 1},
+              PipelineDescription:      "Compute word counts using Cloud Dataflow",
+              StageToEnvironmentMapping: map[string]string{"my-stage": "my-env"},
+              Steps: append(
+                  []*dataflowpb.WorkerPool{
+                      {
+                          Id:         1,
+                          Kind:        dataflowpb.WorkerPool_KIND_BATCH,
+                          WorkerCount: 2,
+                          Type: &dataflowpb.WorkerPool_StageToWorkerConfig{
+                              StageToWorkerConfig: &dataflowpb.WorkerPoolStageToWorkerConfig{
+                                  StageToWorkers: map[string]int32{"my-stage": 2},
+                              },
+                          },
+                      },
+                      {
+                          Id:      2,
+                          Kind:     dataflowpb.WorkerPool_KIND_BATCH,
+                          WorkerCount: 4,
+                          Type: &dataflowpb.WorkerPool_DefaultPackageSet{
+                              DefaultPackageSet: &dataflowpb.DefaultPackageSet{
+                                  Name: "default",
+                              },
+                          },
+                      },
+                  },
+                  &dataflowpb.ParallelInstruction{
+                      Kind: &dataflowpb.ParallelInstruction_WorkerPool{
+                          WorkerPool: &dataflowpb.WorkerPoolReference{
+                              PoolId: 1,
+                          },
+                      },
+                      DisplayName: "CreateBatchWorker1",
+                      Tag:         "CreateBatchWorker1",
+                      NumOutputs:  1,
+                  },
+                  &dataflowpb.ExecutionStage{
+                      Id:  1,
+                      Name: "my-stage",
+                      Kind: &dataflowpb.ExecutionStage_ComputeTransform{
+                          ComputeTransform: &dataflowpb.TransformReference{
+                              ProjectId: projectID,
+                              Name:     "ComputeWordCounts",
+                          },
+                      },
+                      Parallelism: &dataflowpb.ExecutionStage_WorkerPool{
+                          WorkerPool: &dataflowpb.WorkerPoolReference{
+                              PoolId: 1,
+                          },
+                      },
+                  },
+              ),
+              Parameters: map[string]string{
+                  "inputFile": "gs://dataflow-samples-us-east1/shakespeare.txt",
+                  "output":    "gs://my-bucket/output-my-dataset",
+                  "sdkVersion": "go.v11",
+              },
+          },
+      },
+      Environment: &dataflowpb.Environment{
+          Version:        "v1b3",
+          SdkPipelineOptions: &dataflowpb.Environment_SdkPipeLineOptions{
+              SdkPipeLineOptions: &dataflowpb.SdkPipeLineOptions{
+                  Options: map[string]string{"numWorkers": "5"},
+              },
+          },
+      },
+  }
+j, err := client.CreateJob(ctx, job)
+  if err != nil {
+      return nil, fmt.Errorf("client.CreateJob: %v", err)
+  }
+  fmt.Fprintf(w, "Job '%v' status: %v\n", j.GetName(), j.GetState())
+return j, nil
+}
+```

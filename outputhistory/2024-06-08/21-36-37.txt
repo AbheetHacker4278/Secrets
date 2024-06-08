@@ -1,0 +1,32 @@
+
+```python
+import tensorflow as tf
+Create a simple network
+input_layer = tf.keras.Input(shape=(28, 28, 1))
+x = tf.keras.layers.Conv2D(32, (3, 3), activation='relu')(input_layer)
+x = tf.keras.layers.MaxPooling2D((2, 2))(x)
+x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu')(x)
+x = tf.keras.layers.MaxPooling2D((2, 2))(x)
+x = tf.keras.layers.Flatten()(x)
+x = tf.keras.layers.Dense(128, activation='relu')(x)
+output_layer = tf.keras.layers.Dense(10, activation='softmax')(x)
+model = tf.keras.Model(input_layer, output_layer)
+Create an inception module
+def inception_module(x):
+  branch1x1 = tf.keras.layers.Conv2D(64, (1, 1), activation='relu')(x)
+branch3x3 = tf.keras.layers.Conv2D(64, (1, 1), activation='relu')(x)
+  branch3x3 = tf.keras.layers.Conv2D(64, (3, 3), activation='relu')(branch3x3)
+branch5x5 = tf.keras.layers.Conv2D(64, (1, 1), activation='relu')(x)
+  branch5x5 = tf.keras.layers.Conv2D(64, (5, 5), activation='relu')(branch5x5)
+branch_pool = tf.keras.layers.MaxPooling2D((3, 3), strides=(1, 1), padding='same')(x)
+  branch_pool = tf.keras.layers.Conv2D(64, (1, 1), activation='relu')(branch_pool)
+return tf.keras.layers.concatenate([branch1x1, branch3x3, branch5x5, branch_pool], axis=-1)
+Add inception modules to the network
+x = inception_module(x)
+x = inception_module(x)
+x = inception_module(x)
+Add a final fully connected layer
+output_layer = tf.keras.layers.Dense(10, activation='softmax')(x)
+Create the final model
+model = tf.keras.Model(input_layer, output_layer)
+```

