@@ -1,0 +1,16 @@
+
+
+check whether a variable is defined
+check whether a file exists
+check whether a string is empty
+check whether a list is empty
+check whether a dictionary is empty
+check whether a set is empty
+check whether a tuple is empty
+check whether a number is even
+check whether a number is odd
+check whether a number is prime
+check whether a number is positive
+check whether a number is negative
+check whether a number is zero
+

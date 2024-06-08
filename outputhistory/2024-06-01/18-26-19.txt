@@ -1,0 +1,15 @@
+
+```python
+Python code to check if a string is a palindrome
+def is_palindrome(string):
+    # Convert the string to lowercase and remove all spaces
+    string = string.lower().replace(" ", "")
+# Check if the string is the same backwards and forwards
+return string == string[::-1]
+
+Test the function with different strings
+print(is_palindrome("racecar"))  # True
+print(is_palindrome("madam"))  # True
+print(is_palindrome("hello"))  # False
+print(is_palindrome("A man, a plan, a canal, Panama!"))  # True
+```
