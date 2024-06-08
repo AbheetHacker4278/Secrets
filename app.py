@@ -225,7 +225,7 @@ if __name__ == "__main__":
         elif text == "check climate condition":
             speak("Boss")
             import weather
-            api_key = "da7fcfac8bffd01e83fcd97fd91d4c9e"  # Replace with your OpenWeatherMap API key
+            api_key = "da7fcfac8bffd01e83fcd97fd91d4c9e" 
             while True:
                 location = weather.get_location_from_voice()
                 if location:
