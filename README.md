@@ -1,6 +1,6 @@
-# Secret Project
+# Secret Project ✅
 
-# To Run the Project:
+# To Run the Project:✅
   1. clone the project properly.
   2. open cloned folder.
   3. right click and open powershell terminal of cloned folder.
