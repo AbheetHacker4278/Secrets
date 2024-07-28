@@ -1,5 +1,11 @@
 import multiprocessing
 import loding
+import subprocess
+import re
+import tkinter as tk
+from tkinter import ttk
+import threading
+import time
 
 
 
@@ -140,6 +146,8 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, terminate_processes)
     signal.signal(signal.SIGTERM, terminate_processes)
 
+
+
     def jarvis_brain(text):
         print(chat.history)
         q = text.split(" ")
@@ -212,11 +220,11 @@ if __name__ == "__main__":
             main()
 
         elif text == "shutdown":
+            speak("Shutting down. Goodbye Boss!")
             cp = None
             try:
-                speak("Shutting down. Goodbye, Boss!")
+                speak("")
                 multiprocessing.freeze_support()
-                # Your main logic here
             except KeyboardInterrupt:
                 terminate_processes(None, None)
             finally:

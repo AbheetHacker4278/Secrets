@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import scrolledtext
+from tkinter import scrolledtext, StringVar
 from scapy.all import sniff, IP, TCP, UDP
 import platform
 import threading
@@ -22,8 +22,23 @@ def packet_callback(packet):
         ip_layer = packet.getlayer(IP)
         src_ip = ip_layer.src
         dst_ip = ip_layer.dst
-        packet_info = f"[!] Packet: {src_ip} -> {dst_ip}\n"
 
+        # Apply protocol filters
+        protocol_filter = protocol_var.get()
+        if protocol_filter == "TCP" and not packet.haslayer(TCP):
+            return
+        if protocol_filter == "UDP" and not packet.haslayer(UDP):
+            return
+
+        # Apply good/bad packet filters
+        packet_type_filter = packet_type_var.get()
+        if packet_type_filter == "Good" and (src_ip not in allowed_ips and dst_ip not in allowed_ips):
+            return
+        if packet_type_filter == "Bad" and (src_ip not in blocked_ips and dst_ip not in blocked_ips):
+            return
+
+        packet_info = f"[!] Packet: {src_ip} -> {dst_ip}\n"
+        
         if src_ip in blocked_ips or dst_ip in blocked_ips:
             packet_info += f"    [!] Blocked Packet: {src_ip} -> {dst_ip}\n"
             play_beep()  # Play beep for blocked packet
@@ -85,6 +100,26 @@ canvas.create_rectangle(250, 150, 350, 250, fill='lightgreen')
 canvas.create_text(300, 130, text='Allowed Destination')
 canvas.create_rectangle(450, 150, 550, 250, fill='lightcoral')
 canvas.create_text(500, 130, text='Blocked Destination')
+
+# Protocol filter selection
+protocol_var = StringVar(value="All")
+protocol_frame = tk.Frame(root)
+protocol_frame.pack(pady=5)
+
+tk.Label(protocol_frame, text="Filter by Protocol:").pack(side=tk.LEFT)
+tk.Radiobutton(protocol_frame, text="All", variable=protocol_var, value="All").pack(side=tk.LEFT)
+tk.Radiobutton(protocol_frame, text="TCP", variable=protocol_var, value="TCP").pack(side=tk.LEFT)
+tk.Radiobutton(protocol_frame, text="UDP", variable=protocol_var, value="UDP").pack(side=tk.LEFT)
+
+# Packet type filter selection
+packet_type_var = StringVar(value="All")
+packet_type_frame = tk.Frame(root)
+packet_type_frame.pack(pady=5)
+
+tk.Label(packet_type_frame, text="Filter by Packet Type:").pack(side=tk.LEFT)
+tk.Radiobutton(packet_type_frame, text="All", variable=packet_type_var, value="All").pack(side=tk.LEFT)
+tk.Radiobutton(packet_type_frame, text="Good", variable=packet_type_var, value="Good").pack(side=tk.LEFT)
+tk.Radiobutton(packet_type_frame, text="Bad", variable=packet_type_var, value="Bad").pack(side=tk.LEFT)
 
 # Start sniffing in a separate thread
 thread = threading.Thread(target=start_sniffing, daemon=True)
